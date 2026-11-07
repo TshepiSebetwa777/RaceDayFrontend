@@ -1,0 +1,58 @@
+﻿@model RaceDayFrontend.Models.DirectorDashboardViewModel
+@{
+    ViewData["Title"] = "Director Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-primary">📊 Director Command Center</h2>
+    <a asp-action="CreateEvent" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+        <i class="bi bi-plus-circle me-2"></i> + Publish New Race
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Analytics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-primary text-white h-100">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-uppercase fw-semibold mb-3 text-white-50">Total Events Managed</h6>
+                <h1 class="display-4 fw-bold mb-0">@Model.TotalEventsManaged</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-light text-dark h-100 border-start border-primary border-5">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-uppercase fw-semibold mb-3 text-muted">Total Active Athletes</h6>
+                <h1 class="display-4 fw-bold text-primary mb-0">@Model.TotalActiveAthletes</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-light text-dark h-100 border-start border-success border-5">
+            <div class="card-body p-4 text-center">
+                <h6 class="text-uppercase fw-semibold mb-3 text-muted">Total Revenue (ZAR)</h6>
+                <h1 class="display-4 fw-bold text-success mb-0">@Model.TotalRevenueGenerated.ToString("C")</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold text-dark">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Use the navigation bar or the button above to manage existing events, create new race categories, or export official results.</p>
+    </div>
+</div>
