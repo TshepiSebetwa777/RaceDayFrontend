@@ -11,6 +11,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<RaceDayFrontend.Services.AzureBlobService>();
 
 // 2. Configure HTTP Client to talk to the backend API
 // (We will update this URL later to match your running API)
