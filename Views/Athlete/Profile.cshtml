@@ -1,0 +1,62 @@
+﻿@model RaceDayFrontend.Models.AthleteProfileViewModel
+@{
+    ViewData["Title"] = "Athlete Profile";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-primary mb-4">👤 My Athlete Profile</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                <strong>Error:</strong> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5">
+                <div class="row align-items-center mb-4 pb-4 border-bottom">
+                    <div class="col-auto">
+                        @if (!string.IsNullOrEmpty(Model.CurrentProfilePictureUrl))
+                        {
+                            <img src="@Model.CurrentProfilePictureUrl" alt="Profile Picture" class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #0d6efd;" />
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary shadow-sm" style="width: 120px; height: 120px; border: 4px solid #0d6efd;">
+                                <span class="fs-1">📷</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="col">
+                        <h3 class="fw-bold mb-1">@Model.FirstName @Model.LastName</h3>
+                        <p class="text-muted mb-0">Registered Athlete</p>
+                    </div>
+                </div>
+
+                <form asp-action="UpdateProfilePicture" enctype="multipart/form-data" method="post">
+                    <div class="mb-4">
+                        <label asp-for="NewProfilePicture" class="form-label fw-bold text-dark">Update Profile Picture</label>
+                        <input asp-for="NewProfilePicture" type="file" class="form-control form-control-lg bg-light" accept="image/*" required />
+                        <div class="form-text mt-2 text-muted">Upload a clear photo. Supported formats: JPG, PNG.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold py-2">
+                            <i class="bi bi-cloud-upload me-2"></i> Upload to Azure
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
