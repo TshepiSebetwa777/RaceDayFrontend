@@ -17,7 +17,7 @@ builder.Services.AddScoped<RaceDayFrontend.Services.AzureBlobService>();
 // (We will update this URL later to match your running API)
 builder.Services.AddHttpClient("RaceDayAPI", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7000/api/");
+    client.BaseAddress = new Uri("https://localhost:7232/api/");
 });
 
 var app = builder.Build();
