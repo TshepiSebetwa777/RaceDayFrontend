@@ -1,0 +1,79 @@
+﻿@model RaceDayFrontend.Models.CreateEventViewModel
+@{
+    ViewData["Title"] = "Publish New Race";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">📝 Publish New Race</h2>
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Back to Dashboard</a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5">
+                <form asp-action="CreateEvent">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Title" class="form-control bg-light border-0" placeholder="Race Title" />
+                        <label asp-for="Title">Race Title</label>
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <textarea asp-for="Description" class="form-control bg-light border-0" style="height: 100px" placeholder="Description"></textarea>
+                        <label asp-for="Description">Race Description</label>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="RaceDate" class="form-control bg-light border-0" />
+                                <label asp-for="RaceDate">Scheduled Date</label>
+                                <span asp-validation-for="RaceDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="CategoryId" class="form-control bg-light border-0" placeholder="Category ID" />
+                                <label asp-for="CategoryId">Category ID</label>
+                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Capacity" class="form-control bg-light border-0" placeholder="Capacity" />
+                                <label asp-for="Capacity">Max Capacity</label>
+                                <span asp-validation-for="Capacity" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="RegistrationFee" class="form-control bg-light border-0" placeholder="Fee" />
+                                <label asp-for="RegistrationFee">Registration Fee (ZAR)</label>
+                                <span asp-validation-for="RegistrationFee" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">
+                            Publish Race to Portal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
