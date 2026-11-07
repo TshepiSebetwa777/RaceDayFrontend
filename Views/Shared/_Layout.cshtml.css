@@ -1,48 +1,70 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@ {
+    var role = HttpContextAccessor.HttpContext?.Session.GetString("UserRole");
+    var userEmail = HttpContextAccessor.HttpContext?.Session.GetString("UserEmail");
 }
 
-a {
-  color: #0077cc;
+<!DOCTYPE html >
+<html lang="en" >
+<head >
+<meta charset="utf-8" / >
+<meta name="viewport" content="width=device-width, initial-scale=1.0" / >
+<title > @ViewData["Title"] - RaceDay Athletics</title >
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" / >
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" / >
+</head >
+<body >
+<header >
+<!-- Distinct Blue Theme with shadow -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-primary shadow-sm mb-4" >
+<div class="container-fluid px-4" >
+<a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index" >
+🏁 RaceDay Athletics
+</a >
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" >
+<span class="navbar-toggler-icon" > </span >
+</button >
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" >
+<ul class="navbar-nav flex-grow-1" >
+@if (role == "Organiser") {
+    <li class="nav-item"><a class="nav-link text-white" href="#">Director Dashboard</a></li> <li class="nav-item"><a class="nav-link text-white" href="#">Manage Events</a></li>
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+else if (role == "Participant") {
+    <li class="nav-item"><a class="nav-link text-white" href="#">Athlete Portal</a></li> <li class="nav-item"><a class="nav-link text-white" href="#">My Races</a></li> <li class="nav-item"><a class="nav-link text-white" href="#">Leaderboards</a></li>
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+</ul >
+<!-- Login / Logout distinct styling -->
+<ul class="navbar-nav" >
+@if (!string.IsNullOrEmpty(role)) {
+    <li class="nav-item"> <span class="nav-link text-light me-3"><em>@userEmail</em></span> </li> <li class="nav-item"> <a class="btn btn-light text-primary rounded-pill px-4 fw-bold" asp-controller="Account" asp-action="Logout">Sign Out</a> </li>
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+else {
+    <li class="nav-item"> <a class="btn btn-outline-light rounded-pill px-4" asp-controller="Account" asp-action="Login">Athlete / Director Login</a> </li>
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
+</ul >
+</div >
+</div >
+</nav >
+</header >
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
+<div class="container" >
+<main role="main" class="pb-3" >
+@RenderBody()
+</main >
+</div >
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
-}
+<footer class="border-top footer text-muted mt-5 bg-light" >
+<div class="container py-3 text-center" >
+&copy; 2026 - RaceDay Athletics Platform - <a asp-area="" asp-controller="Home" asp-action="Privacy" > Privacy Policy</a >
+</div >
+</footer >
+<script src="~/lib/jquery/dist/jquery.min.js" > </script >
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" > </script >
+@await RenderSectionAsync("Scripts", required: false)
+</body >
+</html >
