@@ -1,0 +1,76 @@
+﻿@model IEnumerable<RaceDayFrontend.Models.AthleteEventDto>
+@{
+    ViewData["Title"] = "Available Races";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-primary">🏃 Upcoming Races</h2>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+        <strong>Oops!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var race in Model)
+        {
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                        <h5 class="card-title mb-0 fw-bold">@race.Title</h5>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-info text-dark mb-3 rounded-pill px-3 py-2 fw-bold">@race.CategoryName</span>
+                        <p class="card-text text-secondary mb-4">@race.Description</p>
+
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                            <span class="fw-semibold text-muted">Race Date</span>
+                            <span class="fw-bold text-dark">@race.RaceDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                            <span class="fw-semibold text-muted">Entry Fee</span>
+                            <span class="fw-bold text-dark">@race.RegistrationFee.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold text-muted">Capacity</span>
+                            <span>
+                                @race.CurrentRegistrations / @race.Capacity
+                                @if (race.CurrentRegistrations >= race.Capacity)
+                                {
+                                    <span class="text-danger fw-bold ms-1">(FULL)</span>
+                                }
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4 pt-0">
+                        <form asp-action="Enrol" method="post">
+                            <input type="hidden" name="eventId" value="@race.Id" />
+                            <button type="submit" class="btn btn-outline-primary rounded-pill w-100 fw-bold py-2" @(race.CurrentRegistrations >= race.Capacity ? "disabled" : "")>
+                                Register for Event
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted fw-light">No upcoming races found. Keep training!</h4>
+        </div>
+    }
+</div>
