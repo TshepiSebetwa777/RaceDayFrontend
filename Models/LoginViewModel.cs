@@ -6,7 +6,7 @@ namespace RaceDayFrontend.Models
     {
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public string EmailAddress { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]

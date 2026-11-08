@@ -1,0 +1,55 @@
+﻿@model IEnumerable<RaceDayFrontend.Models.EnrolmentListDto>
+@{
+    ViewData["Title"] = "Event Enrolments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-primary">🏃 Enrolments: @ViewBag.EventTitle</h2>
+    <a asp-action="ManageEvents" class="btn btn-outline-secondary rounded-pill px-4">Back to Events</a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3">Athlete Name</th>
+                    <th class="py-3">Category</th>
+                    <th class="py-3">Status</th>
+                    <th class="pe-4 py-3 text-end">Results</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var enrol in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 py-3 fw-bold">@enrol.AthleteName</td>
+                            <td class="py-3">
+                                <span class="badge bg-secondary rounded-pill px-3">@enrol.CategoryName</span>
+                            </td>
+                            <td class="py-3 text-success fw-bold">@enrol.Status</td>
+                            <td class="pe-4 py-3 text-end">
+                                <!-- RESULT ENTRY BUTTON -->
+                                <a asp-action="CaptureResult"
+                                   asp-route-enrolmentId="@enrol.Id"
+                                   asp-route-athleteName="@enrol.AthleteName"
+                                   asp-route-categoryName="@enrol.CategoryName"
+                                   class="btn btn-sm btn-success rounded-pill px-3">
+                                    ⏱️ Log Result
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">No athletes have enrolled in this event yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

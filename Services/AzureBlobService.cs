@@ -38,5 +38,30 @@ namespace RaceDayFrontend.Services
 
             return blobClient.Uri.ToString();
         }
+
+        public async Task<string> UploadEventBannerAsync(IFormFile file, string eventTitle)
+        {
+            if (file == null || file.Length == 0) return null!;
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient("event-banners");
+            await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+            var extension = Path.GetExtension(file.FileName);
+            var safeTitle = new string(eventTitle.Where(c => char.IsLetterOrDigit(c)).ToArray());
+            var uniqueFileName = $"{safeTitle}-{Guid.NewGuid().ToString().Substring(0, 5)}{extension}";
+
+            var blobClient = containerClient.GetBlobClient(uniqueFileName);
+
+            using (var stream = file.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType }
+                });
+            }
+
+            return blobClient.Uri.ToString();
+        }
     }
+
 }

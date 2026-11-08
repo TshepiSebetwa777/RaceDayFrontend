@@ -1,0 +1,58 @@
+﻿@model RaceDayFrontend.Models.EditEventViewModel
+@{
+    ViewData["Title"] = "Edit Race Event";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">✏️ Edit Race Event</h2>
+            <a asp-action="ManageEvents" class="btn btn-outline-secondary rounded-pill px-4">Back to Events</a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5">
+                <form asp-action="EditEvent" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="EventId" />
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Title" class="form-control bg-light border-0" placeholder="Race Title" />
+                        <label asp-for="Title">Race Title</label>
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <textarea asp-for="Description" class="form-control bg-light border-0" style="height: 120px" placeholder="Description"></textarea>
+                        <label asp-for="Description">Race Description (Includes Location & Distance)</label>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="RaceDate" class="form-control bg-light border-0" />
+                        <label asp-for="RaceDate">Scheduled Date</label>
+                        <span asp-validation-for="RaceDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="BannerImage" type="file" class="form-control bg-light border-0 pt-4" accept="image/*" />
+                        <label asp-for="BannerImage" class="fw-bold text-primary">Update Event Banner (Azure)</label>
+                        <div class="form-text mt-1 text-muted">Leave empty to keep the current banner.</div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

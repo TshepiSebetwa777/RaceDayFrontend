@@ -7,12 +7,12 @@
     <div class="col-md-8">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold text-primary">📝 Publish New Race</h2>
-            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Back to Dashboard</a>
+            <a asp-action="ManageEvents" class="btn btn-outline-secondary rounded-pill px-4">Back to Events</a>
         </div>
 
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-5">
-                <form asp-action="CreateEvent">
+                <form asp-action="CreateEvent" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="form-floating mb-3">
@@ -21,7 +21,7 @@
                         <span asp-validation-for="Title" class="text-danger small"></span>
                     </div>
 
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <textarea asp-for="Description" class="form-control bg-light border-0" style="height: 100px" placeholder="Description"></textarea>
                         <label asp-for="Description">Race Description</label>
                         <span asp-validation-for="Description" class="text-danger small"></span>
@@ -30,16 +30,16 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <input asp-for="RaceDate" class="form-control bg-light border-0" />
-                                <label asp-for="RaceDate">Scheduled Date</label>
-                                <span asp-validation-for="RaceDate" class="text-danger small"></span>
+                                <input asp-for="Location" class="form-control bg-light border-0" placeholder="Location" />
+                                <label asp-for="Location">Location</label>
+                                <span asp-validation-for="Location" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <input asp-for="CategoryId" class="form-control bg-light border-0" placeholder="Category ID" />
-                                <label asp-for="CategoryId">Category ID</label>
-                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                                <input asp-for="RaceDate" class="form-control bg-light border-0" />
+                                <label asp-for="RaceDate">Scheduled Date</label>
+                                <span asp-validation-for="RaceDate" class="text-danger small"></span>
                             </div>
                         </div>
                     </div>
@@ -47,18 +47,33 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <input asp-for="Capacity" class="form-control bg-light border-0" placeholder="Capacity" />
-                                <label asp-for="Capacity">Max Capacity</label>
-                                <span asp-validation-for="Capacity" class="text-danger small"></span>
+                                <input asp-for="Distance" class="form-control bg-light border-0" placeholder="Distance" />
+                                <label asp-for="Distance">Distance (km)</label>
+                                <span asp-validation-for="Distance" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <input asp-for="RegistrationFee" class="form-control bg-light border-0" placeholder="Fee" />
-                                <label asp-for="RegistrationFee">Registration Fee (ZAR)</label>
-                                <span asp-validation-for="RegistrationFee" class="text-danger small"></span>
+                                <select asp-for="EventType" class="form-select bg-light border-0">
+                                    <option value="">-- Select Type --</option>
+                                    @if (ViewBag.EventTypes != null)
+                                    {
+                                        foreach (var typeName in ViewBag.EventTypes)
+                                        {
+                                            <option value="@typeName">@typeName</option>
+                                        }
+                                    }
+                                </select>
+                                <label asp-for="EventType">Event Type</label>
+                                <span asp-validation-for="EventType" class="text-danger small"></span>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="BannerImage" type="file" class="form-control bg-light border-0 pt-4" accept="image/*" />
+                        <label asp-for="BannerImage" class="fw-bold text-primary">Upload Event Banner (Azure)</label>
+                        <div class="form-text mt-1 text-muted">Upload an image to store in Azure Blob Storage.</div>
                     </div>
 
                     <div class="d-grid mt-4">

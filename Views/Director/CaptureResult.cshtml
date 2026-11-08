@@ -1,0 +1,53 @@
+﻿@model RaceDayFrontend.Models.CaptureResultViewModel
+@{
+    ViewData["Title"] = "Capture Result";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-6">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-success">⏱️ Capture Result</h2>
+            <a asp-action="ManageEvents" class="btn btn-outline-secondary rounded-pill px-4">Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-light border-0 pt-4 pb-0 px-5">
+                <h5 class="text-primary mb-1">@Model.AthleteName</h5>
+                <p class="text-muted mb-3">@Model.CategoryName</p>
+            </div>
+            <div class="card-body p-5 pt-3">
+                <form asp-action="CaptureResult">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="EnrolmentId" />
+                    <input type="hidden" asp-for="AthleteName" />
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="TimeRecorded" class="form-control bg-light border-0" placeholder="00:00:00" />
+                        <label asp-for="TimeRecorded">Finish Time (HH:MM:SS)</label>
+                        <span asp-validation-for="TimeRecorded" class="text-danger small"></span>
+                        <div class="form-text mt-1 text-muted">Example: 02:45:10 for 2 hours, 45 mins.</div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="MedalType" class="form-control bg-light border-0" placeholder="Medal" />
+                        <label asp-for="MedalType">Medal / Finishing Position</label>
+                        <span asp-validation-for="MedalType" class="text-danger small"></span>
+                        <div class="form-text mt-1 text-muted">Example: "Gold", "Silver", or "14th Place".</div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm">
+                            Publish Result to Portal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

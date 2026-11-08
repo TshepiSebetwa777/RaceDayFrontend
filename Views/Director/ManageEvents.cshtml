@@ -1,0 +1,83 @@
+﻿@model IEnumerable<RaceDayFrontend.Models.AthleteEventDto>
+@{
+    ViewData["Title"] = "Manage Events";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-primary">⚙️ Manage Events</h2>
+    <a asp-action="CreateEvent" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+        <i class="bi bi-plus-circle me-2"></i> + Publish New Race
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-3">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show rounded-3">
+        <strong>Error:</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase text-secondary small fw-bold">Event Title</th>
+                        <th class="py-3 text-uppercase text-secondary small fw-bold">Date</th>
+                        <th class="pe-4 py-3 text-uppercase text-secondary small fw-bold text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 py-3 fw-bold text-primary">@item.Title</td>
+                                <td class="py-3">@item.RaceDate.ToString("MMM dd, yyyy")</td>
+                                <td class="pe-4 py-3 text-end">
+                                    <!-- View Enrolments -->
+                                    <a asp-action="Enrolments" asp-route-id="@item.Id" asp-route-title="@item.Title" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1">
+                                        Enrolments
+                                    </a>
+
+                                    <!-- Manage Categories -->
+                                    <a asp-action="ManageCategories" asp-route-eventId="@item.Id" asp-route-eventTitle="@item.Title" class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-1">
+                                        Categories
+                                    </a>
+
+                                    <!-- Edit Event -->
+                                    <a asp-action="EditEvent" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-pill px-3 me-1">
+                                        Edit
+                                    </a>
+
+                                    <!-- Delete Event -->
+                                    <form asp-action="DeleteEvent" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this event? This action cannot be undone.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center py-5 text-muted">
+                                No events found. Click "Publish New Race" to get started.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

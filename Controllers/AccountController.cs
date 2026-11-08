@@ -2,7 +2,7 @@
 using RaceDayFrontend.Models;
 using System.Text.Json;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace RaceDayFrontend.Controllers
 {
@@ -35,21 +35,24 @@ namespace RaceDayFrontend.Controllers
             {
                 var responseData = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<JsonElement>(responseData);
-                var token = result.GetProperty("token").GetString();
 
-                // Decode JWT to get user details
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
+                var role = result.GetProperty("role").GetString();
 
-                var role = jwtToken.Claims.FirstOrDefault(c => c.Type == "role" || c.Type.EndsWith("role"))?.Value;
-                var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email" || c.Type.EndsWith("emailaddress"))?.Value;
+                // --- Capture the Backend Session Cookie! ---
+                if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
+                {
+                    var sessionCookie = cookies.FirstOrDefault(c => c.StartsWith(".AspNetCore.Session"));
+                    if (sessionCookie != null)
+                    {
+                        HttpContext.Session.SetString("ApiCookie", sessionCookie.Split(';')[0]);
+                    }
+                }
 
-                // Set session variables
-                HttpContext.Session.SetString("JWToken", token);
                 HttpContext.Session.SetString("UserRole", role ?? "Participant");
-                HttpContext.Session.SetString("UserEmail", email ?? model.Email);
+                HttpContext.Session.SetString("UserEmail", model.EmailAddress);
+                HttpContext.Session.SetString("JWToken", "BackendUsesSessionsNotJWT");
 
-                if (role == "Organiser")
+                if (role == "Organiser" || role == "1")
                     return RedirectToAction("Index", "Director");
 
                 return RedirectToAction("Index", "Athlete");
