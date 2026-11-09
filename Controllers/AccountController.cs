@@ -38,19 +38,19 @@ namespace RaceDayFrontend.Controllers
 
                 var role = result.GetProperty("role").GetString();
 
-                // --- Capture the Backend Session Cookie! ---
+                // 1. CAPTURE THE BACKEND COOKIE MANUALLY
                 if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
                 {
                     var sessionCookie = cookies.FirstOrDefault(c => c.StartsWith(".AspNetCore.Session"));
                     if (sessionCookie != null)
                     {
+                        // Store the exact cookie string in the frontend session
                         HttpContext.Session.SetString("ApiCookie", sessionCookie.Split(';')[0]);
                     }
                 }
 
                 HttpContext.Session.SetString("UserRole", role ?? "Participant");
                 HttpContext.Session.SetString("UserEmail", model.EmailAddress);
-                HttpContext.Session.SetString("JWToken", "BackendUsesSessionsNotJWT");
 
                 if (role == "Organiser" || role == "1")
                     return RedirectToAction("Index", "Director");

@@ -31,9 +31,7 @@
                 <h5 class="mb-0 py-2">➕ Add Category</h5>
             </div>
             <div class="card-body p-4">
-                <form asp-action="AddCategory" method="post">
-                    <input type="hidden" name="eventId" value="@ViewBag.EventId" />
-                    <input type="hidden" name="eventTitle" value="@ViewBag.EventTitle" />
+                <form asp-action="AddCategory" asp-route-eventId="@ViewBag.EventId" asp-route-eventTitle="@ViewBag.EventTitle" method="post">
 
                     <div class="form-floating mb-3">
                         <input type="text" name="typeName" class="form-control bg-light border-0" required placeholder="e.g., Half Marathon" />

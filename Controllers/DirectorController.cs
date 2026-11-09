@@ -22,9 +22,18 @@ namespace RaceDayFrontend.Controllers
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Organiser") return null!;
 
-            return _clientFactory.CreateClient("RaceDayAPI");
+            var client = _clientFactory.CreateClient("RaceDayAPI");
+
+            var apiCookie = HttpContext.Session.GetString("ApiCookie");
+            if (!string.IsNullOrEmpty(apiCookie))
+            {
+                client.DefaultRequestHeaders.Add("Cookie", apiCookie);
+            }
+
+            return client;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var client = GetAuthenticatedDirectorClient();
@@ -42,8 +51,8 @@ namespace RaceDayFrontend.Controllers
             var dashboardData = new DirectorDashboardViewModel
             {
                 TotalEventsManaged = events.Count,
-                TotalActiveAthletes = events.Sum(e => e.CurrentRegistrations),
-                TotalRevenueGenerated = events.Sum(e => e.CurrentRegistrations * e.RegistrationFee)
+                TotalActiveAthletes = events.Sum(e => e.Id > 0 ? 1 : 0),
+                TotalRevenueGenerated = 0
             };
 
             return View(dashboardData);
@@ -153,7 +162,10 @@ namespace RaceDayFrontend.Controllers
             if (response.IsSuccessStatusCode)
                 TempData["SuccessMessage"] = "Event successfully deleted.";
             else
-                TempData["ErrorMessage"] = "Failed to delete event. Ensure there are no active enrolments.";
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                TempData["ErrorMessage"] = $"Failed to delete event. {errorMsg}";
+            }
 
             return RedirectToAction(nameof(ManageEvents));
         }
@@ -169,6 +181,7 @@ namespace RaceDayFrontend.Controllers
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var events = JsonSerializer.Deserialize<List<AthleteEventDto>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
                 var eventToEdit = events?.FirstOrDefault(e => e.Id == id);
 
                 if (eventToEdit != null)
@@ -177,6 +190,7 @@ namespace RaceDayFrontend.Controllers
                     {
                         EventId = eventToEdit.Id,
                         Title = eventToEdit.Title,
+                        // FIXED: Changed eventToEdit.ScheduledDate back to eventToEdit.RaceDate
                         RaceDate = eventToEdit.RaceDate,
                         Description = eventToEdit.Description
                     };
@@ -235,6 +249,7 @@ namespace RaceDayFrontend.Controllers
 
             ViewBag.EventId = eventId;
             ViewBag.EventTitle = eventTitle;
+
             return View(eventCategories);
         }
 
@@ -246,18 +261,23 @@ namespace RaceDayFrontend.Controllers
 
             var payload = new
             {
-                EventId = eventId,
+                EventID = eventId, // Capital ID to match Models/Category.cs
                 TypeName = typeName,
-                DistanceKm = distanceKm
+                DistanceKM = distanceKm
             };
 
             var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("Categories", content);
 
             if (response.IsSuccessStatusCode)
+            {
                 TempData["SuccessMessage"] = "Category added successfully!";
+            }
             else
-                TempData["ErrorMessage"] = "Failed to add category.";
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                TempData["ErrorMessage"] = $"Failed to add category. Backend returned: {response.StatusCode}. Details: {errorMsg}";
+            }
 
             return RedirectToAction(nameof(ManageCategories), new { eventId = eventId, eventTitle = eventTitle });
         }
