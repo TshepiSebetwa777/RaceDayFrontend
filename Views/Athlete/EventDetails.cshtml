@@ -1,0 +1,96 @@
+﻿@model RaceDayFrontend.Models.AthleteEventDto
+@{
+    ViewData["Title"] = "Race Details";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-primary mb-1">🏁 @Model.Title</h2>
+            <p class="text-muted mb-0">Organised by: <strong>@Model.Organiser</strong></p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">← Back to Races</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
+            <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
+            <strong>Error:</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="bg-primary text-white text-center py-5 rounded-top-4" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                    <h1 class="display-1 mb-0 opacity-25">🏃</h1>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-3">About this Race</h4>
+                    <p class="card-text fs-5 text-secondary lh-lg mb-5">
+                        @Model.Description
+                    </p>
+
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3 text-primary">
+                                    <i class="bi bi-calendar-event fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">Race Date</h6>
+                                    <p class="text-muted mb-0">@Model.RaceDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrolment Form -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-light h-100">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold text-center mb-4 pb-2 border-bottom">Ready to run?</h4>
+
+                    <!-- ENROLMENT POST FORM -->
+                    <form asp-action="Enrol" method="post" class="mt-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Select Your Category</label>
+                            <select name="categoryId" class="form-select form-select-lg border-0 shadow-sm" required>
+                                <option value="" disabled selected>Choose distance...</option>
+                                <!-- NOTE: If you added a dynamic Categories list to your EventDetails viewbag/DTO, loop them here.
+                                     For now, we simulate the drop-down. Ensure your CategoriesController handles this. -->
+                                <option value="1">Marathon (42.2km)</option>
+                                <option value="2">Half Marathon (21.1km)</option>
+                                <option value="3">10km Run</option>
+                                <option value="4">5km Fun Run</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm py-3">
+                                Enrol Now
+                            </button>
+                        </div>
+                        <p class="text-center text-muted small mt-3">
+                            <i class="bi bi-shield-check me-1"></i> Your enrolment is recorded immediately.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

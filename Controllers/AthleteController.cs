@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RaceDayFrontend.Models;
 using RaceDayFrontend.Services;
-using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
 
 namespace RaceDayFrontend.Controllers
 {
@@ -17,17 +17,24 @@ namespace RaceDayFrontend.Controllers
             _blobService = blobService;
         }
 
+        // FIXED: Using Session Cookies instead of JWToken to match Backend AccountController
         private HttpClient GetAuthenticatedClient()
         {
-            var token = HttpContext.Session.GetString("JWToken");
-            if (string.IsNullOrEmpty(token)) return null!;
+            var role = HttpContext.Session.GetString("UserRole");
+            if (string.IsNullOrEmpty(role)) return null!;
 
             var client = _clientFactory.CreateClient("RaceDayAPI");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var apiCookie = HttpContext.Session.GetString("ApiCookie");
+            if (!string.IsNullOrEmpty(apiCookie))
+            {
+                client.DefaultRequestHeaders.Add("Cookie", apiCookie);
+            }
+
             return client;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             var client = GetAuthenticatedClient();
             if (client == null) return RedirectToAction("Login", "Account");
@@ -40,18 +47,59 @@ namespace RaceDayFrontend.Controllers
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 events = JsonSerializer.Deserialize<List<AthleteEventDto>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<AthleteEventDto>();
             }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                events = events.Where(e =>
+                    e.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                    e.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                    e.Organiser.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            events = events.OrderBy(e => e.RaceDate).ToList();
+
+            ViewData["CurrentFilter"] = searchString;
             return View(events);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Enrol(int eventId)
+        [HttpGet]
+        public async Task<IActionResult> EventDetails(int id)
         {
             var client = GetAuthenticatedClient();
             if (client == null) return RedirectToAction("Login", "Account");
 
-            var response = await client.PostAsync($"Enrolments/{eventId}", null);
-            if (response.IsSuccessStatusCode) TempData["SuccessMessage"] = "Successfully registered for the race!";
-            else TempData["ErrorMessage"] = "Registration failed. The race might be full or you are already enrolled.";
+            var response = await client.GetAsync($"Events/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var eventDetail = JsonSerializer.Deserialize<AthleteEventDto>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return View(eventDetail);
+            }
+
+            TempData["ErrorMessage"] = "Event details not found.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Enrol(int categoryId)
+        {
+            var client = GetAuthenticatedClient();
+            if (client == null) return RedirectToAction("Login", "Account");
+
+            var payload = new { CategoryId = categoryId };
+            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("Enrolments", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Successfully enrolled for the race!";
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                TempData["ErrorMessage"] = $"Enrolment failed. {errorMsg}";
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -61,7 +109,7 @@ namespace RaceDayFrontend.Controllers
             var client = GetAuthenticatedClient();
             if (client == null) return RedirectToAction("Login", "Account");
 
-            var response = await client.GetAsync("Results/myresults");
+            var response = await client.GetAsync("Results/myachievements");
             var results = new List<AthleteResultDto>();
 
             if (response.IsSuccessStatusCode)
@@ -78,7 +126,6 @@ namespace RaceDayFrontend.Controllers
             var email = HttpContext.Session.GetString("UserEmail");
             if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
 
-            // In a real app, we'd fetch current details from the API. We'll simulate it.
             var model = new AthleteProfileViewModel
             {
                 FirstName = "Athlete",
@@ -98,8 +145,14 @@ namespace RaceDayFrontend.Controllers
             {
                 try
                 {
-                    // Call our new dedicated Azure Blob Service
-                    var imageUrl = await _blobService.UploadProfilePictureAsync(model.NewProfilePicture, email);
+                    var imageUrl = await _blobService.UploadEventBannerAsync(model.NewProfilePicture, email);
+
+                    var payload = new { FullName = $"{model.FirstName} {model.LastName}", ProfilePictureUrl = imageUrl };
+                    var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+                    var client = GetAuthenticatedClient();
+                    await client.PutAsync("Account/profile", content);
+
                     TempData["ProfilePicUrl"] = imageUrl;
                     TempData["SuccessMessage"] = "Profile picture updated successfully in Azure Blob Storage!";
                 }
