@@ -4,19 +4,22 @@ namespace RaceDayFrontend.Models
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Full Name is required")]
+        [Display(Name = "Full Name")]
         public string FullName { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Email address is required")]
         [EmailAddress]
+        [Display(Name = "Email address")]
         public string EmailAddress { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
         [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
         public string Password { get; set; } = string.Empty;
 
-        [Required]
-        public int RoleId { get; set; } = 2; // Default to 2 (Athlete)
+        [Required(ErrorMessage = "Please select an account type")]
+        [Display(Name = "Account Type")]
+        public int RoleId { get; set; }
     }
 }

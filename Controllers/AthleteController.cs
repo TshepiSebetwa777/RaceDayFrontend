@@ -17,7 +17,7 @@ namespace RaceDayFrontend.Controllers
             _blobService = blobService;
         }
 
-        // FIXED: Using Session Cookies instead of JWToken to match Backend AccountController
+        // BULLETPROOF COOKIE BRIDGE
         private HttpClient GetAuthenticatedClient()
         {
             var role = HttpContext.Session.GetString("UserRole");
@@ -29,6 +29,14 @@ namespace RaceDayFrontend.Controllers
             if (!string.IsNullOrEmpty(apiCookie))
             {
                 client.DefaultRequestHeaders.Add("Cookie", apiCookie);
+            }
+            else
+            {
+                // Fallback: If dropped, grab the browser's active session cookie
+                if (Request.Cookies.TryGetValue(".AspNetCore.Session", out var browserCookie))
+                {
+                    client.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.Session={browserCookie}");
+                }
             }
 
             return client;
@@ -57,7 +65,6 @@ namespace RaceDayFrontend.Controllers
             }
 
             events = events.OrderBy(e => e.RaceDate).ToList();
-
             ViewData["CurrentFilter"] = searchString;
             return View(events);
         }
@@ -101,7 +108,25 @@ namespace RaceDayFrontend.Controllers
                 TempData["ErrorMessage"] = $"Enrolment failed. {errorMsg}";
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyEvents));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyEvents()
+        {
+            var client = GetAuthenticatedClient();
+            if (client == null) return RedirectToAction("Login", "Account");
+
+            var response = await client.GetAsync("Enrolments/myenrolments");
+            var myEvents = new List<AthleteEnrolmentDto>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                myEvents = JsonSerializer.Deserialize<List<AthleteEnrolmentDto>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<AthleteEnrolmentDto>();
+            }
+
+            return View(myEvents);
         }
 
         public async Task<IActionResult> MyResults()
@@ -109,7 +134,7 @@ namespace RaceDayFrontend.Controllers
             var client = GetAuthenticatedClient();
             if (client == null) return RedirectToAction("Login", "Account");
 
-            var response = await client.GetAsync("Results/myachievements");
+            var response = await client.GetAsync("Results/myresults");
             var results = new List<AthleteResultDto>();
 
             if (response.IsSuccessStatusCode)

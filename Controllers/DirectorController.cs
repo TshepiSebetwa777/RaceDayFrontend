@@ -20,7 +20,7 @@ namespace RaceDayFrontend.Controllers
         private HttpClient GetAuthenticatedDirectorClient()
         {
             var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Organiser") return null!;
+            if (string.IsNullOrEmpty(role) || (role != "Organiser" && role != "1")) return null!;
 
             var client = _clientFactory.CreateClient("RaceDayAPI");
 
@@ -28,6 +28,14 @@ namespace RaceDayFrontend.Controllers
             if (!string.IsNullOrEmpty(apiCookie))
             {
                 client.DefaultRequestHeaders.Add("Cookie", apiCookie);
+            }
+            else
+            {
+                // Fallback: Prevent the dashboard from losing data on refresh
+                if (Request.Cookies.TryGetValue(".AspNetCore.Session", out var browserCookie))
+                {
+                    client.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.Session={browserCookie}");
+                }
             }
 
             return client;
@@ -190,7 +198,6 @@ namespace RaceDayFrontend.Controllers
                     {
                         EventId = eventToEdit.Id,
                         Title = eventToEdit.Title,
-                        // FIXED: Changed eventToEdit.ScheduledDate back to eventToEdit.RaceDate
                         RaceDate = eventToEdit.RaceDate,
                         Description = eventToEdit.Description
                     };
@@ -261,7 +268,7 @@ namespace RaceDayFrontend.Controllers
 
             var payload = new
             {
-                EventID = eventId, // Capital ID to match Models/Category.cs
+                EventID = eventId,
                 TypeName = typeName,
                 DistanceKM = distanceKm
             };

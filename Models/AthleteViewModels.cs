@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace RaceDayFrontend.Models
 {
-    // The core event object coming from the API
     public class AthleteEventDto
     {
         [JsonPropertyName("eventID")]
@@ -19,34 +18,52 @@ namespace RaceDayFrontend.Models
         [JsonPropertyName("scheduledDate")]
         public DateTime RaceDate { get; set; }
 
-        // Optional fields if the API sends them, mapped safely
-        [JsonPropertyName("capacity")]
-        public int Capacity { get; set; }
+        [JsonPropertyName("organiser")]
+        public string Organiser { get; set; } = string.Empty;
 
-        [JsonPropertyName("currentRegistrations")]
-        public int CurrentRegistrations { get; set; }
+        [JsonPropertyName("categories")]
+        public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+    }
 
-        [JsonPropertyName("registrationFee")]
-        public decimal RegistrationFee { get; set; }
+    public class AthleteEnrolmentDto
+    {
+        [JsonPropertyName("enrolmentId")]
+        public int EnrolmentId { get; set; }
+
+        [JsonPropertyName("eventTitle")]
+        public string EventTitle { get; set; } = string.Empty;
+
+        [JsonPropertyName("raceDate")]
+        public DateTime RaceDate { get; set; }
 
         [JsonPropertyName("categoryName")]
         public string CategoryName { get; set; } = string.Empty;
 
-        [JsonPropertyName("organiser")]
-        public string Organiser { get; set; } = string.Empty;
+        [JsonPropertyName("distanceKm")]
+        public decimal DistanceKm { get; set; }
+
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = string.Empty;
     }
 
-    // The result object for the athlete's personal races
     public class AthleteResultDto
     {
-        public int EventId { get; set; }
+        [JsonPropertyName("eventTitle")]
         public string EventTitle { get; set; } = string.Empty;
+
+        [JsonPropertyName("raceDate")]
         public DateTime RaceDate { get; set; }
-        public TimeSpan FinishTime { get; set; }
-        public int OverallPosition { get; set; }
+
+        [JsonPropertyName("categoryName")]
+        public string CategoryName { get; set; } = string.Empty;
+
+        [JsonPropertyName("timeRecorded")]
+        public string TimeRecorded { get; set; } = string.Empty;
+
+        [JsonPropertyName("medalType")]
+        public string MedalType { get; set; } = string.Empty;
     }
 
-    // The profile object to handle Azure Blob Storage integration
     public class AthleteProfileViewModel
     {
         [Required]

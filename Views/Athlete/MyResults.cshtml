@@ -3,63 +3,49 @@
     ViewData["Title"] = "My Race Results";
 }
 
-<div class="mt-4 mb-4">
-    <h2 class="fw-bold text-primary">🏅 My Results</h2>
-    <p class="text-secondary">Track your performance across all completed events.</p>
-</div>
+<h2 class="fw-bold text-primary mb-4 mt-3">🏆 My Race History</h2>
 
-<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4 py-3 text-uppercase text-secondary small fw-bold">Race Event</th>
-                        <th class="py-3 text-uppercase text-secondary small fw-bold">Date</th>
-                        <th class="py-3 text-uppercase text-secondary small fw-bold">Finish Time</th>
-                        <th class="py-3 pe-4 text-center text-uppercase text-secondary small fw-bold">Overall Position</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var result in Model)
-                        {
-                            <tr>
-                                <td class="ps-4 py-4 fw-bold text-primary">@result.EventTitle</td>
-                                <td class="py-4 text-muted">@result.RaceDate.ToString("MMMM dd, yyyy")</td>
-                                <td class="py-4 font-monospace fs-5">@result.FinishTime.ToString(@"hh\:mm\:ss")</td>
-                                <td class="py-4 pe-4 text-center">
-                                    @if (result.OverallPosition == 1)
-                                    {
-                                        <span class="badge bg-warning text-dark rounded-pill fs-6 px-3 shadow-sm">🏆 1st Place</span>
-                                    }
-                                    else if (result.OverallPosition == 2)
-                                    {
-                                        <span class="badge bg-secondary rounded-pill fs-6 px-3 shadow-sm">🥈 2nd Place</span>
-                                    }
-                                    else if (result.OverallPosition == 3)
-                                    {
-                                        <span class="badge text-white rounded-pill fs-6 px-3 shadow-sm" style="background-color: #cd7f32;">🥉 3rd Place</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-light text-secondary border rounded-pill px-3 py-2 fw-bold">#@result.OverallPosition</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3">Race Event</th>
+                    <th class="py-3">Date</th>
+                    <th class="py-3">Category (Distance)</th>
+                    <th class="py-3 text-center">Finish Time</th>
+                    <th class="pe-4 py-3 text-end">Position / Medal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
                     {
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                You haven't completed any races yet. Time to hit the track!
+                            <td class="ps-4 py-3 fw-bold text-dark">@item.EventTitle</td>
+                            <td class="py-3">@item.RaceDate.ToString("MMM dd, yyyy")</td>
+                            <td class="py-3">@item.CategoryName</td>
+                            <!-- FIXED: Now using TimeRecorded -->
+                            <td class="py-3 text-center font-monospace fs-5">@item.TimeRecorded</td>
+                            <!-- FIXED: Now using MedalType -->
+                            <td class="pe-4 py-3 text-end">
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold">
+                                    <i class="bi bi-award-fill me-1"></i> @item.MedalType
+                                </span>
                             </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            You don't have any race results yet. Complete a race to see your achievements here!
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

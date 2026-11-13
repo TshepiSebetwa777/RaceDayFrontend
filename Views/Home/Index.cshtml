@@ -1,8 +1,63 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome to RaceDay";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="bg-primary text-white text-center py-5 shadow-sm" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+        <div class="container py-5 my-5">
+            <h1 class="display-3 fw-bold mb-4">Push Your Limits. <br /> Find Your Next Race.</h1>
+            <p class="lead fs-4 fw-light mb-5 max-w-700 mx-auto">
+                Join thousands of athletes competing in marathons, 10Ks, and trail runs. Manage your race calendar and track your medals all in one place.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                @if (Context.Session.GetString("UserRole") == "Participant" || Context.Session.GetString("UserRole") == "2")
+                {
+                    <a asp-controller="Athlete" asp-action="Index" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow-sm py-3">Find a Race</a>
+                }
+                else if (Context.Session.GetString("UserRole") == "Organiser" || Context.Session.GetString("UserRole") == "1")
+                {
+                    <a asp-controller="Director" asp-action="Index" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow-sm py-3">Go to Dashboard</a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow-sm py-3">Register as Athlete</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold py-3">Organiser Login</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Highlights -->
+    <div class="container py-5 mt-5 mb-5">
+        <div class="row g-5 text-center">
+            <div class="col-md-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4 text-primary shadow-sm" style="width: 100px; height: 100px;">
+                    <i class="bi bi-calendar2-check display-4"></i>
+                </div>
+                <h3 class="fw-bold">Easy Enrolment</h3>
+                <p class="text-muted fs-5 mt-3 px-3">Browse verified races, choose your distance category, and secure your spot instantly.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4 text-primary shadow-sm" style="width: 100px; height: 100px;">
+                    <i class="bi bi-trophy display-4"></i>
+                </div>
+                <h3 class="fw-bold">Track Results</h3>
+                <p class="text-muted fs-5 mt-3 px-3">View your finish times, overall positions, and virtual medals in your personal history log.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4 text-primary shadow-sm" style="width: 100px; height: 100px;">
+                    <i class="bi bi-gear display-4"></i>
+                </div>
+                <h3 class="fw-bold">Director Tools</h3>
+                <p class="text-muted fs-5 mt-3 px-3">Organisers can publish events, manage capacities, upload banners to Azure, and capture finish times.</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .max-w-700 {
+        max-width: 700px;
+    }
+</style>

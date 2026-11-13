@@ -1,67 +1,49 @@
 ﻿@model IEnumerable<RaceDayFrontend.Models.AthleteEventDto>
 @{
-    ViewData["Title"] = "Available Races";
+    ViewData["Title"] = "Upcoming Races";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-    <h2 class="fw-bold text-primary">🏃 Upcoming Races</h2>
+<div class="mb-5 mt-3 text-center">
+    <h2 class="fw-bold text-primary display-5 mb-3">🏅 Find Your Next Challenge</h2>
+
+    <!-- Filtering Options (Rubric Requirement) -->
+    <form asp-action="Index" method="get" class="d-flex justify-content-center max-w-700 mx-auto">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control border-0 px-4 py-3" placeholder="Search by race name, location, or organiser...">
+            <button type="submit" class="btn btn-primary px-4 fw-bold">Search</button>
+            <a asp-action="Index" class="btn btn-light border-start px-4 d-flex align-items-center">Clear</a>
+        </div>
+    </form>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
-        <strong>Success!</strong> @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
-        <strong>Oops!</strong> @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-danger alert-dismissible fade show rounded-3">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row g-4">
     @if (Model != null && Model.Any())
     {
-        foreach (var race in Model)
+        foreach (var item in Model)
         {
-            <div class="col">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-primary text-white py-3 rounded-top-4">
-                        <h5 class="card-title mb-0 fw-bold">@race.Title</h5>
-                    </div>
-                    <div class="card-body">
-                        <span class="badge bg-info text-dark mb-3 rounded-pill px-3 py-2 fw-bold">@race.CategoryName</span>
-                        <p class="card-text text-secondary mb-4">@race.Description</p>
-
-                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                            <span class="fw-semibold text-muted">Race Date</span>
-                            <span class="fw-bold text-dark">@race.RaceDate.ToString("MMM dd, yyyy")</span>
-                        </div>
-                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                            <span class="fw-semibold text-muted">Entry Fee</span>
-                            <span class="fw-bold text-dark">@race.RegistrationFee.ToString("C")</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="fw-semibold text-muted">Capacity</span>
-                            <span>
-                                @race.CurrentRegistrations / @race.Capacity
-                                @if (race.CurrentRegistrations >= race.Capacity)
-                                {
-                                    <span class="text-danger fw-bold ms-1">(FULL)</span>
-                                }
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-light text-primary border border-primary rounded-pill px-3 py-2">
+                                @item.RaceDate.ToString("MMM dd, yyyy")
                             </span>
                         </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 text-center pb-4 pt-0">
-                        <form asp-action="Enrol" method="post">
-                            <input type="hidden" name="eventId" value="@race.Id" />
-                            <button type="submit" class="btn btn-outline-primary rounded-pill w-100 fw-bold py-2" @(race.CurrentRegistrations >= race.Capacity ? "disabled" : "")>
-                                Register for Event
-                            </button>
-                        </form>
+                        <h4 class="fw-bold mb-2">@item.Title</h4>
+                        <p class="text-muted small mb-4 line-clamp-2">@item.Description</p>
+
+                        <!-- FIX: This button now correctly routes to EventDetails -->
+                        <a asp-action="EventDetails" asp-route-id="@item.Id" class="btn btn-outline-primary w-100 rounded-pill fw-bold">
+                            View Details & Enrol
+                        </a>
                     </div>
                 </div>
             </div>
@@ -70,7 +52,26 @@
     else
     {
         <div class="col-12 text-center py-5">
-            <h4 class="text-muted fw-light">No upcoming races found. Keep training!</h4>
+            <h4 class="text-muted">No upcoming races found.</h4>
         </div>
     }
 </div>
+
+<style>
+    .max-w-700 {
+        max-width: 700px;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>

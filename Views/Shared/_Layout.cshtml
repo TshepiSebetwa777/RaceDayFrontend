@@ -15,37 +15,56 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-primary shadow-sm mb-4">
-            <div class="container-fluid px-4">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary shadow-sm mb-3">
+            <div class="container-fluid">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                    🏁 RaceDay Athletics
+                    <i class="bi bi-grid-3x3-gap-fill me-1"></i> RaceDay Athletics
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (role == "Organiser")
+                        @if (Context.Session.GetString("UserRole") == "Participant" || Context.Session.GetString("UserRole") == "2")
                         {
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Director" asp-action="Index">Director Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Director" asp-action="ManageEvents">Manage Events</a></li>
-                        }
-                        else if (role == "Participant")
-                        {
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Athlete" asp-action="Index">Athlete Portal</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Athlete" asp-action="MyResults">My Races</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Athlete" asp-action="Profile">My Profile</a></li>
-                        }
-                    </ul>
-
-                    <ul class="navbar-nav">
-                        @if (!string.IsNullOrEmpty(role))
-                        {
-                            <li class="nav-item align-self-center me-3">
-                                <span class="text-light"><em>@userEmail</em></span>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Athlete" asp-action="Index">Athlete Portal</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-light text-primary rounded-pill px-4 fw-bold" asp-controller="Account" asp-action="Logout">Sign Out</a>
+                                <!-- FIXED: Added missing My Events link -->
+                                <a class="nav-link text-white" asp-controller="Athlete" asp-action="MyEvents">My Events</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Athlete" asp-action="MyResults">My Results</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Athlete" asp-action="Profile">My Profile</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("UserRole") == "Organiser" || Context.Session.GetString("UserRole") == "1")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Director" asp-action="Index">Director Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Director" asp-action="ManageEvents">Manage Events</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Director" asp-action="CreateEvent">Create Event</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("UserEmail")))
+                        {
+                            <li class="nav-item d-flex align-items-center me-3">
+                                <span class="text-white-50 fst-italic">@Context.Session.GetString("UserEmail")</span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                    <button type="submit" class="btn btn-light text-primary rounded-pill px-4 fw-bold shadow-sm">Sign Out</button>
+                                </form>
                             </li>
                         }
                         else
